@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>School Lost & Found | ของหาย-ของพบ</title>
+  <meta name="theme-color" content="#2563eb" />
+  <style>
+    *{box-sizing:border-box}
+    :root{
+      --bg:#f6f8fc; --card:#fff; --text:#172033; --muted:#667085;
+      --primary:#2563eb; --primary2:#1d4ed8; --line:#e5e7eb;
+      --lost:#ef4444; --found:#10b981; --warn:#f59e0b; --shadow:0 12px 35px rgba(16,24,40,.08)
+    }
+    body{margin:0;font-family:system-ui,-apple-system,"Segoe UI","Noto Sans Thai",sans-serif;background:var(--bg);color:var(--text)}
+    button,input,select,textarea{font:inherit}
+    button{cursor:pointer}
+    .container{max-width:1180px;margin:auto;padding:0 18px}
+    header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+    .nav{height:68px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:800}
+    .logo{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#2563eb,#60a5fa);display:grid;place-items:center;color:#fff;font-size:22px}
+    .nav-actions{display:flex;gap:8px}
+    .btn{border:0;border-radius:12px;padding:10px 15px;font-weight:700}
+    .btn-primary{background:var(--primary);color:#fff}
+    .btn-primary:hover{background:var(--primary2)}
+    .btn-light{background:#fff;border:1px solid var(--line);color:var(--text)}
+    .hero{padding:46px 0 22px}
+    .hero-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:22px;align-items:stretch}
+    .hero-card{background:linear-gradient(135deg,#1d4ed8,#2563eb 60%,#60a5fa);color:#fff;border-radius:28px;padding:34px;box-shadow:var(--shadow)}
+    .hero-card h1{font-size:clamp(30px,5vw,52px);line-height:1.05;margin:0 0 14px}
+    .hero-card p{opacity:.92;max-width:680px;font-size:17px}
+    .quick{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px}
+    .quick button{padding:16px;border:none;border-radius:16px;font-weight:800}
+    .quick .lost{background:#fff;color:#b91c1c}
+    .quick .found{background:#d1fae5;color:#047857}
+    .stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .stat{background:var(--card);border-radius:20px;padding:20px;box-shadow:var(--shadow)}
+    .stat strong{font-size:30px;display:block}
+    .stat span{color:var(--muted)}
+    .toolbar{margin-top:24px;background:var(--card);padding:14px;border-radius:20px;box-shadow:var(--shadow);display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:10px}
+    .field{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:12px;background:#fff;outline:none}
+    .field:focus{border-color:#93c5fd;box-shadow:0 0 0 3px #dbeafe}
+    .section-head{display:flex;justify-content:space-between;align-items:center;margin:28px 0 14px}
+    .section-head h2{margin:0}
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding-bottom:40px}
+    .card{background:var(--card);border-radius:20px;overflow:hidden;border:1px solid #edf0f5;box-shadow:0 8px 26px rgba(16,24,40,.06)}
+    .thumb{height:190px;background:#eef2f7;display:grid;place-items:center;overflow:hidden}
+    .thumb img{width:100%;height:100%;object-fit:cover}
+    .thumb .emoji{font-size:56px}
+    .card-body{padding:16px}
+    .topline{display:flex;justify-content:space-between;gap:10px;align-items:center}
+    .badge{font-size:12px;font-weight:800;padding:6px 9px;border-radius:999px}
+    .badge.lost{background:#fee2e2;color:#b91c1c}
+    .badge.found{background:#d1fae5;color:#047857}
+    .badge.done{background:#e5e7eb;color:#374151}
+    .card h3{margin:11px 0 5px;font-size:19px}
+    .meta{color:var(--muted);font-size:14px;line-height:1.6}
+    .desc{margin:10px 0;color:#344054;min-height:44px}
+    .card-actions{display:flex;gap:8px;margin-top:12px}
+    .card-actions button{flex:1}
+    .empty{grid-column:1/-1;text-align:center;padding:54px 20px;color:var(--muted);background:#fff;border-radius:20px;border:1px dashed #d0d5dd}
+    dialog{border:none;border-radius:22px;padding:0;max-width:720px;width:calc(100% - 28px);box-shadow:0 30px 80px rgba(16,24,40,.24)}
+    dialog::backdrop{background:rgba(15,23,42,.55)}
+    .modal{padding:22px}
+    .modal h2{margin:0 0 18px}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    label{display:block;font-weight:700;font-size:14px;margin-bottom:6px}
+    .form-group{margin-bottom:12px}
+    textarea{min-height:96px;resize:vertical}
+    .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+    .preview{width:100%;max-height:230px;object-fit:cover;border-radius:14px;display:none;margin-top:8px}
+    .footer{padding:24px 0 42px;color:var(--muted);text-align:center;font-size:14px}
+    .toast{position:fixed;right:18px;bottom:18px;background:#111827;color:#fff;padding:12px 16px;border-radius:12px;opacity:0;transform:translateY(12px);pointer-events:none;transition:.25s;z-index:99}
+    .toast.show{opacity:1;transform:none}
+    .mini{font-size:12px;color:var(--muted)}
+    @media(max-width:900px){.hero-grid{grid-template-columns:1fr}.cards{grid-template-columns:repeat(2,1fr)}.toolbar{grid-template-columns:1fr 1fr}.toolbar input{grid-column:1/-1}}
+    @media(max-width:620px){.nav .brand small{display:none}.hero{padding-top:22px}.hero-card{padding:24px}.cards{grid-template-columns:1fr}.toolbar{grid-template-columns:1fr}.toolbar input{grid-column:auto}.grid2{grid-template-columns:1fr}.quick{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.btn{padding:10px 12px}}
+  </style>
+</head>
+<body>
+<header>
+  <div class="container nav">
+    <div class="brand">
+      <div class="logo">🔎</div>
+      <div>School Lost & Found<br><small style="font-weight:500;color:#667085">ระบบของหาย-ของพบในโรงเรียน</small></div>
+    </div>
+    <div class="nav-actions">
+      <button class="btn btn-light" id="exportBtn">สำรองข้อมูล</button>
+      <button class="btn btn-primary" onclick="openPost()">+ ลงประกาศ</button>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+  <section class="hero">
+    <div class="hero-grid">
+      <div class="hero-card">
+        <h1>ของหาย ไม่ต้องหายใจหายคอ 👀</h1>
+        <p>ลงประกาศของหายหรือของที่พบ ค้นหาได้ง่าย พร้อมรายละเอียดสถานที่และช่องทางติดต่อ</p>
+        <div class="quick">
+          <button class="lost" onclick="openPost('lost')">📍 แจ้งของหาย</button>
+          <button class="found" onclick="openPost('found')">🎒 แจ้งของที่พบ</button>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><strong id="statAll">0</strong><span>ประกาศทั้งหมด</span></div>
+        <div class="stat"><strong id="statOpen">0</strong><span>กำลังตามหา</span></div>
+        <div class="stat"><strong id="statLost">0</strong><span>ของหาย</span></div>
+        <div class="stat"><strong id="statFound">0</strong><span>ของที่พบ</span></div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <input id="search" class="field" placeholder="ค้นหาชื่อของ, รายละเอียด, สถานที่..." />
+      <select id="typeFilter" class="field">
+        <option value="">ทุกประเภท</option>
+        <option value="lost">ของหาย</option>
+        <option value="found">ของที่พบ</option>
+      </select>
+      <select id="catFilter" class="field">
+        <option value="">ทุกหมวดหมู่</option>
+        <option>อุปกรณ์การเรียน</option>
+        <option>กระเป๋า</option>
+        <option>โทรศัพท์/อิเล็กทรอนิกส์</option>
+        <option>เสื้อผ้า</option>
+        <option>บัตร/เอกสาร</option>
+        <option>เงิน/กระเป๋าสตางค์</option>
+        <option>อื่น ๆ</option>
+      </select>
+      <button class="btn btn-light" onclick="resetFilters()">ล้างตัวกรอง</button>
+    </div>
+  </section>
+
+  <div class="section-head">
+    <h2>ประกาศล่าสุด</h2>
+    <span class="mini" id="resultText"></span>
+  </div>
+
+  <section id="cards" class="cards"></section>
+</main>
+
+<div class="footer">ข้อมูลถูกบันทึกในเครื่องนี้ด้วย LocalStorage • เหมาะสำหรับใช้งานภายในโรงเรียน/โปรเจกต์ต้นแบบ</div>
+
+<dialog id="postDialog">
+  <form class="modal" id="postForm">
+    <h2 id="modalTitle">ลงประกาศ</h2>
+    <div class="grid2">
+      <div class="form-group">
+        <label>ประเภทประกาศ</label>
+        <select id="type" class="field" required>
+          <option value="lost">ของหาย</option>
+          <option value="found">ของที่พบ</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>หมวดหมู่</label>
+        <select id="category" class="field" required>
+          <option>อุปกรณ์การเรียน</option>
+          <option>กระเป๋า</option>
+          <option>โทรศัพท์/อิเล็กทรอนิกส์</option>
+          <option>เสื้อผ้า</option>
+          <option>บัตร/เอกสาร</option>
+          <option>เงิน/กระเป๋าสตางค์</option>
+          <option>อื่น ๆ</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>ชื่อสิ่งของ</label>
+      <input id="title" class="field" maxlength="80" required placeholder="เช่น กระเป๋าดินสอสีดำ" />
+    </div>
+    <div class="grid2">
+      <div class="form-group">
+        <label>สถานที่</label>
+        <input id="location" class="field" required placeholder="เช่น ห้องสมุด ชั้น 2" />
+      </div>
+      <div class="form-group">
+        <label>วันที่หาย/พบ</label>
+        <input id="date" class="field" type="date" required />
+      </div>
+    </div>
+    <div class="form-group">
+      <label>รายละเอียด</label>
+      <textarea id="description" class="field" maxlength="400" required placeholder="สี ลักษณะ จุดสังเกต ฯลฯ"></textarea>
+    </div>
+    <div class="grid2">
+      <div class="form-group">
+        <label>ชื่อผู้ลงประกาศ</label>
+        <input id="owner" class="field" required placeholder="ชื่อ/ห้อง เช่น พี ม.6/1" />
+      </div>
+      <div class="form-group">
+        <label>ช่องทางติดต่อ</label>
+        <input id="contact" class="field" required placeholder="เช่น Line: pee01 หรือห้อง 6/1" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label>รูปภาพ (ไม่บังคับ)</label>
+      <input id="image" class="field" type="file" accept="image/*" />
+      <img id="preview" class="preview" alt="preview">
+      <div class="mini">รูปจะถูกย่อขนาดอัตโนมัติก่อนบันทึก</div>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-light" onclick="postDialog.close()">ยกเลิก</button>
+      <button class="btn btn-primary" type="submit">บันทึกประกาศ</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="detailDialog">
+  <div class="modal" id="detailContent"></div>
+</dialog>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const KEY='school_lost_found_v1';
+let items = JSON.parse(localStorage.getItem(KEY) || '[]');
+let imageData = '';
+
+const $ = s => document.querySelector(s);
+const cards = $('#cards');
+const postDialog = $('#postDialog');
+
+function save(){ localStorage.setItem(KEY, JSON.stringify(items)); render(); }
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); }
+function esc(s=''){ return s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+function openPost(type='lost'){
+  $('#postForm').reset(); imageData=''; $('#preview').style.display='none';
+  $('#type').value=type; $('#date').value=new Date().toISOString().slice(0,10);
+  $('#modalTitle').textContent = type==='lost' ? '📍 แจ้งของหาย' : '🎒 แจ้งของที่พบ';
+  postDialog.showModal();
+}
+
+$('#image').addEventListener('change', async e=>{
+  const file=e.target.files[0]; if(!file) return;
+  const img=new Image(); img.src=URL.createObjectURL(file);
+  await new Promise(r=>img.onload=r);
+  const c=document.createElement('canvas'), max=900;
+  const scale=Math.min(1,max/Math.max(img.width,img.height));
+  c.width=img.width*scale; c.height=img.height*scale;
+  c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+  imageData=c.toDataURL('image/jpeg',.78);
+  $('#preview').src=imageData; $('#preview').style.display='block';
+});
+
+$('#postForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  items.unshift({
+    id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
+    type: $('#type').value, category: $('#category').value,
+    title: $('#title').value.trim(), location: $('#location').value.trim(),
+    date: $('#date').value, description: $('#description').value.trim(),
+    owner: $('#owner').value.trim(), contact: $('#contact').value.trim(),
+    image: imageData, status:'open', createdAt: Date.now()
+  });
+  save(); postDialog.close(); toast('บันทึกประกาศเรียบร้อย');
+});
+
+function render(){
+  const q=$('#search').value.toLowerCase().trim(), type=$('#typeFilter').value, cat=$('#catFilter').value;
+  const list=items.filter(i=>{
+    const text=[i.title,i.description,i.location,i.owner,i.category].join(' ').toLowerCase();
+    return (!q||text.includes(q)) && (!type||i.type===type) && (!cat||i.category===cat);
+  });
+  $('#statAll').textContent=items.length;
+  $('#statOpen').textContent=items.filter(i=>i.status==='open').length;
+  $('#statLost').textContent=items.filter(i=>i.type==='lost').length;
+  $('#statFound').textContent=items.filter(i=>i.type==='found').length;
+  $('#resultText').textContent=`พบ ${list.length} รายการ`;
+
+  cards.innerHTML = list.length ? list.map(i=>`
+    <article class="card">
+      <div class="thumb">${i.image?`<img src="${i.image}" alt="${esc(i.title)}">`:`<div class="emoji">${i.type==='lost'?'🔍':'🎒'}</div>`}</div>
+      <div class="card-body">
+        <div class="topline">
+          <span class="badge ${i.status==='done'?'done':i.type}">${i.status==='done'?'ปิดประกาศ':(i.type==='lost'?'ของหาย':'ของที่พบ')}</span>
+          <span class="mini">${esc(i.category)}</span>
+        </div>
+        <h3>${esc(i.title)}</h3>
+        <div class="meta">📍 ${esc(i.location)}<br>📅 ${formatDate(i.date)}</div>
+        <div class="desc">${esc(i.description)}</div>
+        <div class="card-actions">
+          <button class="btn btn-light" onclick="viewItem('${i.id}')">ดูรายละเอียด</button>
+          <button class="btn btn-primary" onclick="toggleDone('${i.id}')">${i.status==='done'?'เปิดประกาศ':'พบเจ้าของแล้ว'}</button>
+        </div>
+      </div>
+    </article>`).join('') : `<div class="empty">ยังไม่พบประกาศที่ตรงกับการค้นหา<br><br><button class="btn btn-primary" onclick="openPost()">+ ลงประกาศใหม่</button></div>`;
+}
+
+function formatDate(d){
+  if(!d) return '-';
+  const [y,m,day]=d.split('-');
+  return `${day}/${m}/${y}`;
+}
+function viewItem(id){
+  const i=items.find(x=>x.id===id); if(!i) return;
+  $('#detailContent').innerHTML=`
+    <div class="topline"><h2 style="margin:0">${esc(i.title)}</h2><span class="badge ${i.status==='done'?'done':i.type}">${i.status==='done'?'ปิดประกาศ':(i.type==='lost'?'ของหาย':'ของที่พบ')}</span></div>
+    ${i.image?`<img src="${i.image}" style="width:100%;max-height:340px;object-fit:cover;border-radius:16px;margin:14px 0">`:''}
+    <p><b>หมวดหมู่:</b> ${esc(i.category)}</p>
+    <p><b>สถานที่:</b> ${esc(i.location)}</p>
+    <p><b>วันที่:</b> ${formatDate(i.date)}</p>
+    <p><b>รายละเอียด:</b> ${esc(i.description)}</p>
+    <p><b>ผู้ลงประกาศ:</b> ${esc(i.owner)}</p>
+    <p><b>ติดต่อ:</b> ${esc(i.contact)}</p>
+    <div class="modal-actions">
+      <button class="btn btn-light" onclick="deleteItem('${i.id}')">ลบประกาศ</button>
+      <button class="btn btn-primary" onclick="detailDialog.close()">ปิด</button>
+    </div>`;
+  detailDialog.showModal();
+}
+function toggleDone(id){
+  const i=items.find(x=>x.id===id); if(!i) return;
+  i.status=i.status==='done'?'open':'done'; save(); toast(i.status==='done'?'ปิดประกาศแล้ว':'เปิดประกาศอีกครั้งแล้ว');
+}
+function deleteItem(id){
+  if(!confirm('ยืนยันการลบประกาศนี้?')) return;
+  items=items.filter(x=>x.id!==id); save(); detailDialog.close(); toast('ลบประกาศแล้ว');
+}
+function resetFilters(){
+  $('#search').value=''; $('#typeFilter').value=''; $('#catFilter').value=''; render();
+}
+['search','typeFilter','catFilter'].forEach(id=>$('#'+id).addEventListener(id==='search'?'input':'change',render));
+
+$('#exportBtn').addEventListener('click',()=>{
+  const blob=new Blob([JSON.stringify(items,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='lost-found-backup.json'; a.click(); URL.revokeObjectURL(a.href);
+});
+
+if(items.length===0){
+  items=[
+    {id:'demo1',type:'lost',category:'อุปกรณ์การเรียน',title:'กระเป๋าดินสอสีดำ',location:'ห้องสมุด',date:new Date().toISOString().slice(0,10),description:'มีพวงกุญแจรูปดาวติดอยู่ด้านข้าง',owner:'ตัวอย่าง ม.6/1',contact:'ติดต่อห้อง ม.6/1',image:'',status:'open',createdAt:Date.now()-1000},
+    {id:'demo2',type:'found',category:'บัตร/เอกสาร',title:'บัตรนักเรียน',location:'หน้าโรงอาหาร',date:new Date().toISOString().slice(0,10),description:'พบตกอยู่บริเวณโต๊ะหน้าร้านน้ำ',owner:'ตัวอย่าง ผู้พบ',contact:'ฝากไว้ที่ห้องประชาสัมพันธ์',image:'',status:'open',createdAt:Date.now()}
+  ];
+  localStorage.setItem(KEY,JSON.stringify(items));
+}
+render();
+</script>
+</body>
+</html>
